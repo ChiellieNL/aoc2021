@@ -8,8 +8,10 @@
 import Foundation
 
 struct Board {
+    /// numbers for this board
     let numbers: [Int]
 
+    /// Creates an array of boards from the specified inpu
     static func load(from input: String) -> [Board] {
         let lines = input.components(separatedBy: .newlines)
         var boards = [Board]()
@@ -30,6 +32,7 @@ struct Board {
         return boards
     }
 
+    /// Returns the numbers for the specified row
     func row(at index: Int) -> [Int] {
         guard index >= 0 && index < 5 else { return [] }
 
@@ -37,6 +40,7 @@ struct Board {
         return Array(numbers[offset..<(offset + 5)])
     }
 
+    /// Returns the numbers for the specified column
     func column(at index: Int) -> [Int] {
         guard index >= 0 && index < 5 else { return [] }
 
@@ -47,6 +51,9 @@ struct Board {
         return col
     }
 
+    /// Checks if this board will have bingo with the specific list of drawn numbers
+    /// If so: it will return the sum of the missing numbers
+    /// otherwise: it will return nil
     func hasBingo(with list: [Int]) -> Int? {
         for i in 0..<5 {
             if list.containsAll(in: row(at: i)) {
@@ -62,8 +69,13 @@ struct Board {
         return nil
     }
 
+    /// Checks when this board would get a BINGO
+    /// Returns a tuple with:
+    ///     - winsAt: the round where it would get bingo
+    ///     - score: The final score it would have at that point
     func bingoResult(with list: [Int]) -> (winsAt: Int, score: Int)? {
-        for i in 0..<list.count {
+        // start with 5, can't win with less numbers can we 😉
+        for i in 5..<list.count {
             if let score = hasBingo(with: Array(list[0...i])) {
                 return (winsAt: i, score: list[i] * score)
             }
@@ -74,6 +86,7 @@ struct Board {
 }
 
 extension Board: CustomStringConvertible {
+    /// just a readable board description
     var description: String {
         var board = ""
 
@@ -87,10 +100,12 @@ extension Board: CustomStringConvertible {
 }
 
 extension Array where Element == Int {
+    /// Returns whether self contains all of the numbers within the specified array
     func containsAll(in array: [Int]) -> Bool {
         return numbersMissing(in: array).isEmpty
     }
 
+    /// Returns an array of numbers within the specified array, that aren't within self
     func numbersMissing(in array: [Int]) -> [Int] {
         var missing = [Int]()
 
@@ -103,6 +118,7 @@ extension Array where Element == Int {
         return missing
     }
 
+    /// Sum of the numbers within this array
     var sum: Int {
         reduce(0, +)
     }
